@@ -1,0 +1,11 @@
+{
+  "name": "mods-modelo-justo",
+  "owner": { "name": "developedaml" },
+  "plugins": [
+    {
+      "name": "modelo-justo",
+      "source": "./modelo-justo",
+      "description": "Clasifica cada petición con Haiku y ajusta el esfuerzo (o el modelo) del turno."
+    }
+  ]
+}

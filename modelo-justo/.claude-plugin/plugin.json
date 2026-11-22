@@ -1,0 +1,5 @@
+{
+  "name": "modelo-justo",
+  "version": "0.1.0",
+  "description": "Clasifica cada petición con Haiku y ajusta el esfuerzo (o el modelo) del turno a lo que la tarea necesita."
+}
