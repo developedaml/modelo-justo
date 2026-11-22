@@ -1,0 +1,8 @@
+{
+  "name": "medidor-uso",
+  "version": "0.1.0",
+  "description": "Muestra encima del prompt el uso del plan (5 horas y 7 días), el llenado del contexto y el coste de la sesión, con avisos al 80% y al 95%.",
+  "author": { "name": "developedaml" },
+  "license": "MIT",
+  "types": "./types/index.d.ts"
+}

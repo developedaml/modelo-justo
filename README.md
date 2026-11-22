@@ -29,4 +29,33 @@ En una sesión de Claude Code (terminal o pestaña Code de Claude Desktop):
 
 Solo usa la API de Claude Code. No abre conexiones de red, no ejecuta comandos y no lee archivos. Guarda únicamente sus ajustes y contadores. Cada mensaje clasificado cuesta una llamada pequeña a Haiku.
 
+---
+
+# medidor-uso
+
+Una fila encima del prompt con el uso de tu plan:
+
+```
+⏱ 5h ▃▅▁▁▁ 42% 2h10 · semana ▂▁▁▁▁ 18% · contexto 35% · $1.23
+```
+
+- Barras de las ventanas de **5 horas** y **7 días**, verde, amarillo (75%) o rojo (90%), con la cuenta atrás al reinicio.
+- **Contexto**: cuánto de la ventana de contexto lleva la conversación.
+- **Coste estimado** de la sesión.
+- Avisos emergentes al **80%** y al **95%** de cada ventana, una vez por periodo.
+
+```
+/plugin install medidor-uso@mods-modelo-justo
+```
+
+```
+/uso          muestra el detalle
+/uso off      oculta la fila (se recuerda entre sesiones)
+/uso on       la vuelve a mostrar
+```
+
+Solo usa la API de Claude Code: no abre conexiones, no ejecuta comandos y no lee archivos.
+
+---
+
 Licencia MIT.

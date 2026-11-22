@@ -1,11 +1,18 @@
 {
   "name": "mods-modelo-justo",
-  "owner": { "name": "developedaml" },
+  "owner": {
+    "name": "developedaml"
+  },
   "plugins": [
     {
       "name": "modelo-justo",
       "source": "./modelo-justo",
       "description": "Clasifica cada petición con Haiku y ajusta el esfuerzo (o el modelo) del turno."
+    },
+    {
+      "name": "medidor-uso",
+      "source": "./medidor-uso",
+      "description": "Uso del plan, contexto y coste de la sesión encima del prompt."
     }
   ]
 }
