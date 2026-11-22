@@ -52,12 +52,46 @@ function estado(activo: boolean, modo: Modo, ultimo?: Nivel): string {
   return `${base} · ${ultimo} → ${modo === 'modelo' ? MODELO[ultimo] : ESFUERZO[ultimo]}`
 }
 
-export const register: Register = on => {
-  const leerAjustes = async ($: EngineInterface) => ({
+async function leerAjustes($: EngineInterface): Promise<{ activo: boolean; modo: Modo }> {
+  return {
     activo: ((await $.store.get('activo')) ?? true) === true,
-    modo: ((await $.store.get('modo')) === 'modelo' ? 'modelo' : 'esfuerzo') as Modo,
-  })
+    modo: (await $.store.get('modo')) === 'modelo' ? 'modelo' : 'esfuerzo',
+  }
+}
 
+async function ejecutar($: EngineInterface, args: string): Promise<string> {
+  const arg = args.trim().toLowerCase()
+  let { activo, modo } = await leerAjustes($)
+
+  if (arg === 'on' || arg === 'off') {
+    activo = arg === 'on'
+    await $.store.set('activo', activo)
+  } else if (arg === 'esfuerzo' || arg === 'modelo') {
+    modo = arg
+    activo = true
+    await $.store.set('modo', modo)
+    await $.store.set('activo', true)
+  } else if (arg !== '' && arg !== 'estado') {
+    return 'Uso: /modelo-justo on | off | esfuerzo | modelo | estado'
+  }
+
+  $.ui.status(estado(activo, modo))
+
+  const s = Number((await $.store.get('cuenta.simple')) ?? 0)
+  const n = Number((await $.store.get('cuenta.normal')) ?? 0)
+  const x = Number((await $.store.get('cuenta.compleja')) ?? 0)
+  const tabla =
+    modo === 'modelo'
+      ? 'simple → haiku · normal → sonnet · compleja → opus'
+      : 'simple → low · normal → medium · compleja → high (mismo modelo)'
+  return [
+    `Modelo justo: ${activo ? 'encendido' : 'apagado'}, modo ${modo}.`,
+    tabla,
+    `Peticiones clasificadas: ${s} simples, ${n} normales, ${x} complejas.`,
+  ].join('\n')
+}
+
+export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     try {
       await $.command.register({
@@ -85,38 +119,7 @@ export const register: Register = on => {
     const respuesta = await ejecutar($, m[1] ?? '')
     $.ui.toast(respuesta.split('\n')[0] ?? respuesta)
     return { drop: respuesta }
-  })
-
-  async function ejecutar($: EngineInterface, args: string): Promise<string> {
-    const arg = args.trim().toLowerCase()
-    let { activo, modo } = await leerAjustes($)
-
-    if (arg === 'on' || arg === 'off') {
-      activo = arg === 'on'
-      await $.store.set('activo', activo)
-    } else if (arg === 'esfuerzo' || arg === 'modelo') {
-      modo = arg
-      activo = true
-      await $.store.set('modo', modo)
-      await $.store.set('activo', true)
-    } else if (arg !== '' && arg !== 'estado') {
-      return 'Uso: /modelo-justo on | off | esfuerzo | modelo | estado'
-    }
-
-    $.ui.status(estado(activo, modo))
-
-    const c = async (n: Nivel) => Number((await $.store.get(`cuenta.${n}`)) ?? 0)
-    const [s, n, x] = [await c('simple'), await c('normal'), await c('compleja')]
-    const tabla =
-      modo === 'modelo'
-        ? 'simple → haiku · normal → sonnet · compleja → opus'
-        : 'simple → low · normal → medium · compleja → high (mismo modelo)'
-    return [
-      `Modelo justo: ${activo ? 'encendido' : 'apagado'}, modo ${modo}.`,
-      tabla,
-      `Peticiones clasificadas: ${s} simples, ${n} normales, ${x} complejas.`,
-    ].join('\n')
-  }
+  }).catch(($, e, next) => next(e))
 
   on('turn.start', async ($, e, next) => {
     // Solo el chat principal, solo peticiones escritas con algo de sustancia.
